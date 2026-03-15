@@ -4,6 +4,7 @@ from pathlib import Path
 
 import gymnasium as gym
 import numpy as np
+from gymnasium.spaces import Discrete
 from PIL import Image
 
 from worldie.config import CollectConfig
@@ -21,6 +22,13 @@ def collect_random_episodes(config: CollectConfig) -> list[Path]:
     ensure_dir(config.output_dir)
 
     env = gym.make(config.env_id, render_mode="rgb_array")
+    if not isinstance(env.action_space, Discrete):
+        raise ValueError(
+            f"Worldie currently supports only discrete action spaces. "
+            f"{config.env_id} uses {type(env.action_space).__name__}."
+        )
+
+    action_dim = int(env.action_space.n)
     saved_paths: list[Path] = []
 
     for episode_idx in range(config.episodes):
@@ -52,9 +60,11 @@ def collect_random_episodes(config: CollectConfig) -> list[Path]:
             actions=np.asarray(actions, dtype=np.int64),
             rewards=np.asarray(rewards, dtype=np.float32),
             dones=np.asarray(dones, dtype=np.bool_),
+            env_id=np.asarray(config.env_id),
+            action_dim=np.asarray(action_dim, dtype=np.int64),
+            image_size=np.asarray(config.image_size, dtype=np.int64),
         )
         saved_paths.append(path)
 
     env.close()
     return saved_paths
-

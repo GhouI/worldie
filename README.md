@@ -47,7 +47,19 @@ python -m worldie.cli collect --episodes 50 --output-dir data/cartpole
 Train the first world model:
 
 ```bash
-python -m worldie.cli train --data-dir data/cartpole --epochs 5
+python -m worldie.cli train --data-dir data/cartpole --epochs 5 --validation-ratio 0.1
+```
+
+Resume a run from the latest checkpoint:
+
+```bash
+python -m worldie.cli train --data-dir data/cartpole --artifact-dir artifacts/world_model --resume-from artifacts/world_model/last.pt --epochs 5
+```
+
+Collect from a richer discrete environment:
+
+```bash
+python -m worldie.cli collect --env-id Acrobot-v1 --episodes 20 --output-dir data/acrobot
 ```
 
 Run tests:
@@ -58,3 +70,6 @@ pytest
 
 Read [docs/README.md](/run/media/abdul/Work/worldie/docs/README.md) first if you want the guided explanation.
 
+## Hardware note
+
+This project currently supports discrete-action environments and has been verified on CPU PyTorch. If you want GPU acceleration on an AMD machine, the next platform target is ROCm rather than CUDA.

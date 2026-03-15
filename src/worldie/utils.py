@@ -22,3 +22,14 @@ def set_seed(seed: int) -> None:
 def default_device() -> torch.device:
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
+def resolve_device(requested: str) -> torch.device:
+    if requested == "auto":
+        return default_device()
+    if requested == "cpu":
+        return torch.device("cpu")
+    if requested == "cuda":
+        if not torch.cuda.is_available():
+            raise ValueError("CUDA was requested but is not available in the current PyTorch environment.")
+        return torch.device("cuda")
+    raise ValueError(f"Unsupported device option: {requested}")

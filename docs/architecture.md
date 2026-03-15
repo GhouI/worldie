@@ -45,6 +45,20 @@ This is the core world-model loop used in systems like PlaNet and Dreamer, but s
 6. reconstruct frame, reward, and done
 7. train with reconstruction + reward + done + KL losses
 
+## Current training workflow
+
+The training pipeline now also supports:
+
+- train/validation episode splits
+- resumable checkpoints
+- `last`, `best`, and periodic epoch checkpoints
+- `history.json` run summaries
+- device selection through the CLI
+
+## Environment scope
+
+Right now the project supports discrete-action environments because the latent dynamics model embeds actions as integer tokens. That is enough for `CartPole-v1` and `Acrobot-v1`, but not yet for continuous-control tasks.
+
 ## What this version does not do yet
 
 - imagination rollouts for policy learning
@@ -55,4 +69,3 @@ This is the core world-model loop used in systems like PlaNet and Dreamer, but s
 - video prediction benchmarks
 
 That is intentional. Those are phase-two topics after the baseline works.
-

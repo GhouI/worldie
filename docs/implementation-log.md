@@ -53,3 +53,26 @@ The goal was not to chase performance yet. The goal was to confirm that the proj
 - we now have a reproducible baseline artifact
 - future model changes can be compared against a known starting point
 - the next bottleneck is no longer "can it run?" but "how should we improve it?"
+
+## 2026-03-15: Training pipeline upgrade
+
+### What was added
+
+- validation split support
+- resumable checkpoints
+- `best.pt`, `last.pt`, and periodic epoch snapshots
+- `history.json` per-run metadata
+- CLI device selection
+- environment metadata in collected episodes
+
+### Why this mattered
+
+The original trainer could produce a model, but it was weak as a long-running workflow. Larger experiments need safer checkpoints, explicit validation, and enough metadata to compare runs without guessing.
+
+### Hardware reality
+
+This machine exposes AMD graphics hardware, not NVIDIA CUDA hardware. That means the correct future GPU path is ROCm, while the currently verified training path remains CPU PyTorch.
+
+### Richer environment check
+
+The collection and training path was also validated on `Acrobot-v1`, which proves the code is no longer narrowly tied to `CartPole-v1`.

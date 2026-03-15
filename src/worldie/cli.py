@@ -13,6 +13,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     collect_parser = subparsers.add_parser("collect", help="Collect random trajectories")
+    collect_parser.add_argument("--env-id", type=str, default="CartPole-v1")
     collect_parser.add_argument("--episodes", type=int, default=50)
     collect_parser.add_argument("--max-steps", type=int, default=500)
     collect_parser.add_argument("--image-size", type=int, default=64)
@@ -29,8 +30,13 @@ def build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--kl-scale", type=float, default=0.1)
     train_parser.add_argument("--latent-dim", type=int, default=32)
     train_parser.add_argument("--hidden-dim", type=int, default=128)
-    train_parser.add_argument("--action-dim", type=int, default=2)
+    train_parser.add_argument("--action-dim", type=int, default=None)
     train_parser.add_argument("--log-every", type=int, default=10)
+    train_parser.add_argument("--validation-ratio", type=float, default=0.1)
+    train_parser.add_argument("--num-workers", type=int, default=0)
+    train_parser.add_argument("--save-every", type=int, default=1)
+    train_parser.add_argument("--device", type=str, choices=["auto", "cpu", "cuda"], default="auto")
+    train_parser.add_argument("--resume-from", type=Path, default=None)
     train_parser.add_argument("--seed", type=int, default=7)
 
     return parser
@@ -42,6 +48,7 @@ def main() -> None:
 
     if args.command == "collect":
         config = CollectConfig(
+            env_id=args.env_id,
             episodes=args.episodes,
             max_steps=args.max_steps,
             image_size=args.image_size,
@@ -65,6 +72,11 @@ def main() -> None:
             hidden_dim=args.hidden_dim,
             action_dim=args.action_dim,
             log_every=args.log_every,
+            validation_ratio=args.validation_ratio,
+            num_workers=args.num_workers,
+            save_every=args.save_every,
+            device=args.device,
+            resume_from=args.resume_from,
             seed=args.seed,
         )
         checkpoint = train_world_model(config)
@@ -76,4 +88,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

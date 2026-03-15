@@ -14,6 +14,9 @@ class Episode:
     actions: np.ndarray
     rewards: np.ndarray
     dones: np.ndarray
+    env_id: str | None = None
+    action_dim: int | None = None
+    image_size: int | None = None
 
     @property
     def transitions(self) -> int:
@@ -34,9 +37,46 @@ def load_episodes(data_dir: Path) -> list[Episode]:
                 actions=data["actions"],
                 rewards=data["rewards"],
                 dones=data["dones"],
+                env_id=str(data["env_id"]) if "env_id" in data.files else None,
+                action_dim=int(data["action_dim"]) if "action_dim" in data.files else None,
+                image_size=int(data["image_size"]) if "image_size" in data.files else None,
             )
         )
     return episodes
+
+
+def infer_action_dim(episodes: list[Episode]) -> int:
+    metadata_values = {episode.action_dim for episode in episodes if episode.action_dim is not None}
+    if len(metadata_values) > 1:
+        raise ValueError("Episode files disagree on action_dim. Keep each training run on one environment.")
+    if metadata_values:
+        return metadata_values.pop()
+
+    max_action = max(int(np.max(episode.actions)) for episode in episodes if episode.actions.size > 0)
+    return max_action + 1
+
+
+def split_episodes(
+    episodes: list[Episode],
+    validation_ratio: float,
+    seed: int,
+) -> tuple[list[Episode], list[Episode]]:
+    if not 0.0 <= validation_ratio < 1.0:
+        raise ValueError("validation_ratio must be in the range [0.0, 1.0).")
+    if validation_ratio == 0.0 or len(episodes) < 2:
+        return episodes, []
+
+    rng = np.random.default_rng(seed)
+    indices = np.arange(len(episodes))
+    rng.shuffle(indices)
+
+    validation_count = max(1, int(round(len(episodes) * validation_ratio)))
+    validation_count = min(validation_count, len(episodes) - 1)
+    validation_indices = set(indices[:validation_count].tolist())
+
+    train_episodes = [episode for idx, episode in enumerate(episodes) if idx not in validation_indices]
+    validation_episodes = [episode for idx, episode in enumerate(episodes) if idx in validation_indices]
+    return train_episodes, validation_episodes
 
 
 class SequenceDataset(Dataset[dict[str, torch.Tensor]]):
@@ -76,4 +116,3 @@ class SequenceDataset(Dataset[dict[str, torch.Tensor]]):
             "rewards": torch.from_numpy(rewards).float(),
             "dones": torch.from_numpy(dones.astype(np.float32)).float(),
         }
-

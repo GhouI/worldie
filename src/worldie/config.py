@@ -26,7 +26,11 @@ class TrainConfig:
     kl_scale: float = 0.1
     latent_dim: int = 32
     hidden_dim: int = 128
-    action_dim: int = 2
+    action_dim: int | None = None
     log_every: int = 10
+    validation_ratio: float = 0.1
+    num_workers: int = 0
+    save_every: int = 1
+    device: str = "auto"
+    resume_from: Path | None = None
     seed: int = 7
-
