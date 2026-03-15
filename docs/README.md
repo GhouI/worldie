@@ -32,3 +32,4 @@ When the project grows, add folders like:
 2. [datasets.md](/run/media/abdul/Work/worldie/docs/datasets.md)
 3. [implementation-log.md](/run/media/abdul/Work/worldie/docs/implementation-log.md)
 4. [research-roadmap.md](/run/media/abdul/Work/worldie/docs/research-roadmap.md)
+5. [experiments/2026-03-15-baseline.md](/run/media/abdul/Work/worldie/docs/experiments/2026-03-15-baseline.md)

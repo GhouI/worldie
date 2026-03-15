@@ -36,3 +36,20 @@ That means:
 - why we reconstruct reward and done, not only pixels
 - how sequence models differ from i.i.d. supervised learning
 
+## 2026-03-15: First baseline run
+
+### What was done
+
+- collected `100` episodes from `CartPole-v1`
+- trained for `5` epochs on the collected dataset
+- saved a baseline checkpoint to `artifacts/baseline_2026_03_15/world_model.pt`
+
+### Why this run was important
+
+The goal was not to chase performance yet. The goal was to confirm that the project works as a real training pipeline outside of a tiny smoke test.
+
+### What changed in our understanding
+
+- we now have a reproducible baseline artifact
+- future model changes can be compared against a known starting point
+- the next bottleneck is no longer "can it run?" but "how should we improve it?"
